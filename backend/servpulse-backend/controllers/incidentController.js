@@ -1,4 +1,3 @@
-// incidentController.js
 const incidentModel = require('../models/incidentModel.js');
 const incidentServiceModel = require('../models/incidentServiceModel.js');
 const incidentPostModel = require('../models/incidentPostModel.js');
@@ -13,6 +12,4 @@ const getIncidents = async (req, res) => {
 	}
 };
 
-// ... CRUD methods for incident controller using the respective models
-
-module.exports = { getIncidents,  /* ... CRUD methods for incident controller */ };
+module.exports = { getIncidents };

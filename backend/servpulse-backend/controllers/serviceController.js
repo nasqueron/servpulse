@@ -1,4 +1,3 @@
-// serviceController.js
 const serviceModel = require('../models/serviceModel.js');
 
 const addService = async (req, res) => {
@@ -21,6 +20,4 @@ const getServices = async (req, res) => {
 	}
 };
 
-// ... other CRUD methods for service controller
-
-module.exports = { addService, getServices, /* ... other CRUD methods */ };
+module.exports = { addService, getServices };
