@@ -1,4 +1,11 @@
-// app.js
+//     -------------------------------------------------------------
+//     ServPulse :: app
+//     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//     Project:        Nasqueron
+//     Description:    Bootstrap the application
+//     License:        BSD-2-Clause
+//     -------------------------------------------------------------
+
 require('dotenv').config(); // Set up .env file
 require('./config/database.js'); // Set up database connection
 
