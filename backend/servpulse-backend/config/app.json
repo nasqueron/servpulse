@@ -1,0 +1,15 @@
+{
+	"navbar": {
+		"title": "ServPulse",
+		"button_left": {
+			"name": "DevCentral",
+			"icon": "fa fa-play",
+			"link": "https://devcentral.nasqueron.org"
+		},
+		"button_right": {
+			"name": "Agora",
+			"icon": "fa fa-book",
+			"link": "https://agora.nasqueron.org"
+		}
+	}
+}

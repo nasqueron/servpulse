@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
+    "foundation-sites": "^6.7.5",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
   },
