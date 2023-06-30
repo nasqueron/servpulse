@@ -1,6 +1,6 @@
 # Quick Starter
 
-The Vue.js application was created using the `> npm init vue@3.3.2` command. To recreate the same environment, you can follow these steps:
+The Vue.js application was created using the `npm init vue@3.3.2` command. To recreate the same environment, you can follow these steps:
 
 1. Once the project is pulled, navigate to the project directory and install the project dependencies:
    ```
