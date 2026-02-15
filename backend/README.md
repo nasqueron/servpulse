@@ -90,6 +90,11 @@ node -e "const {generateToken} = require('./middleware/auth.js'); console.log(ge
 
 The token is valid for 24 hours by default.
 
+> **Important:** Tokens are signed with `JWT_SECRET`. If you change the secret
+> in your `.env`, all previously generated tokens become invalid and you must
+> generate a new one. After changing `JWT_SECRET`, recreate the containers with
+> `docker compose down && docker compose up -d` to apply the new value.
+
 ### Using the token
 
 1. Copy the generated token
