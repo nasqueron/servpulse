@@ -65,6 +65,7 @@ servpulse/
 ├── backend/          # Express.js API server
 │   ├── config/       # App and database configuration
 │   ├── controllers/  # Request handlers
+│   ├── middleware/    # Authentication middleware
 │   ├── models/       # Data access layer
 │   └── routes/       # API route definitions
 ├── frontend/         # Vue.js application
@@ -79,12 +80,31 @@ servpulse/
 
 ## API Endpoints
 
-| Method | Endpoint              | Description          |
-|--------|-----------------------|----------------------|
-| GET    | `/api/service/getAll` | List all services    |
-| POST   | `/api/service`        | Create a service     |
-| GET    | `/api/incident/getAll`| List all incidents   |
-| GET    | `/api/config/getAll`  | Get app configuration|
+### Public (no authentication)
+
+| Method | Endpoint                | Description            |
+|--------|-------------------------|------------------------|
+| GET    | `/api/services`         | List all services      |
+| GET    | `/api/services/:id`     | Get a service          |
+| GET    | `/api/incidents`        | List all incidents     |
+| GET    | `/api/incidents/:id`    | Get incident + updates |
+| GET    | `/api/maintenances`     | List maintenances      |
+| GET    | `/api/maintenances/:id` | Get a maintenance      |
+| GET    | `/api/config/getAll`    | Get app configuration  |
+
+### Admin (requires JWT Bearer token)
+
+| Method | Endpoint                       | Description            |
+|--------|--------------------------------|------------------------|
+| POST   | `/api/services`                | Create a service       |
+| PUT    | `/api/services/:id`            | Update a service       |
+| DELETE | `/api/services/:id`            | Delete a service       |
+| POST   | `/api/incidents`               | Create an incident     |
+| PUT    | `/api/incidents/:id`           | Update an incident     |
+| PUT    | `/api/incidents/:id/resolve`   | Resolve an incident    |
+| POST   | `/api/maintenances`            | Create maintenance     |
+| PUT    | `/api/maintenances/:id`        | Update maintenance     |
+| DELETE | `/api/maintenances/:id`        | Delete maintenance     |
 
 ## Contributing
 
