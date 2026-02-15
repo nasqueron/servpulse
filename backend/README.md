@@ -38,8 +38,8 @@ It is important to note that while some elements and features are not currently 
 The above explanation provides a general overview of the common files and directories found in an MVC-like backend.
 
 # Notes
-- The `/config/app.json` file serves as a json object for in-app customizable settings.
-- The `/config/database.js` file serves as a quick connector to the database, and makes it easy to just import and query. Examples can be found in `/models/`.
+- The `config/app.json` file serves as a json object for in-app customizable settings.
+- The `config/database.js` file serves as a quick connector to the database, and makes it easy to just import and query. Examples can be found in `models/`.
 - The following was the original workflow used to implement the current capabilities of the backend:
   - `config/app.json` | `config/database.js`
   - `routes/serviceRoutes.js` -> `controllers/serviceController.js` -> `models/serviceModel.js`

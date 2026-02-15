@@ -1,7 +1,4 @@
 const incidentModel = require('../models/incidentModel.js');
-const incidentServiceModel = require('../models/incidentServiceModel.js');
-const incidentPostModel = require('../models/incidentPostModel.js');
-const incidentPostStatusModel = require('../models/incidentPostStatusModel.js');
 
 const getIncidents = async (req, res) => {
 	try {

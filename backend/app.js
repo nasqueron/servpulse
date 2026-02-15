@@ -10,9 +10,11 @@ require('dotenv').config(); // Set up .env file
 require('./config/database.js'); // Set up database connection
 
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
-// Middleware to parse JSON requests
+// Middleware
+app.use(cors());
 app.use(express.json());
 
 // Import routes
