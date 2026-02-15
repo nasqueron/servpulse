@@ -223,10 +223,14 @@ npm run test:unit
    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
    ```
 4. Generate an admin JWT token:
-   ```bash
-   docker compose exec backend node -e "const {generateToken} = require('./middleware/auth.js'); console.log(generateToken({role:'admin'}))"
-   ```
+    ```bash
+    docker compose exec backend node -e "const {generateToken} = require('./middleware/auth.js'); console.log(generateToken({role:'admin'}))"
+    ```
 5. Use the token to log into the admin dashboard at `/admin/login`
+
+> **Note:** Tokens are signed with `JWT_SECRET`. Changing the secret invalidates
+> all existing tokens — you must generate a new one. After changing `JWT_SECRET`,
+> recreate the containers with `docker compose down && docker compose up -d`.
 
 ### Reverse Proxy (Nginx)
 
