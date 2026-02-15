@@ -11,7 +11,7 @@ onMounted(async () => {
   try {
     config.value = await configApi.getAll()
   } catch {
-    config.value = { navbar: { title: 'ServPulse', button_left: null, button_right: null } }
+    config.value = { navbar: { title: 'ServPulse', buttons_left: [] } }
   }
 })
 
@@ -27,11 +27,12 @@ const handleLogout = () => {
       <div class="flex items-center justify-between h-14">
         <div class="flex items-center gap-4">
           <a
-            v-if="config?.navbar?.button_left"
-            :href="config.navbar.button_left.link"
+            v-for="btn in config?.navbar?.buttons_left"
+            :key="btn.name"
+            :href="btn.link"
             class="text-xs font-medium text-gray-400 hover:text-white transition-colors"
           >
-            {{ config.navbar.button_left.name }}
+            {{ btn.name }}
           </a>
         </div>
 
@@ -61,13 +62,7 @@ const handleLogout = () => {
           >
             Admin
           </RouterLink>
-          <a
-            v-if="config?.navbar?.button_right"
-            :href="config.navbar.button_right.link"
-            class="text-xs font-medium text-gray-400 hover:text-white transition-colors"
-          >
-            {{ config.navbar.button_right.name }}
-          </a>
+
         </div>
       </div>
     </div>

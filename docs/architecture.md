@@ -86,6 +86,7 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph Routes["Routes (Express Router)"]
+        AR["authRoutes"]
         SR["serviceRoutes"]
         IR["incidentRoutes"]
         MR["maintenanceRoutes"]
@@ -118,6 +119,7 @@ flowchart TB
     end
 
     subgraph Services["Services"]
+        HC["healthCheckService\n(URL monitoring)"]
         NS["notificationService\n(email + webhook)"]
     end
 
@@ -140,6 +142,9 @@ flowchart TB
     WHC --> ISM
     WHC --> IUM
     NS --> SBM
+    HC --> SM
+    HC --> MTM
+    AR --> AUTH
 ```
 
 ## Database Schema
@@ -151,6 +156,7 @@ erDiagram
         varchar name
         varchar group
         text description
+        text url
         varchar status
         integer order
         timestamp created_at

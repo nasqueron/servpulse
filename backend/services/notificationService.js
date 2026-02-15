@@ -39,13 +39,15 @@ const sendWebhook = async (url, payload) => {
 const notifyAll = async (event, data) => {
 	const result = await subscriberModel.getConfirmedSubscribers();
 	const subscribers = result.rows;
+	const baseUrl = process.env.APP_URL || 'http://localhost:8080';
 
 	const subject = `[ServPulse] ${event}`;
-	const text = formatNotification(event, data);
 	const payload = { event, timestamp: new Date().toISOString(), ...data };
 
 	const promises = subscribers.map((sub) => {
 		if (sub.type === 'email' && sub.email) {
+			const unsubscribeUrl = `${baseUrl}/unsubscribe/${sub.unsubscribe_token}`;
+			const text = formatNotification(event, data, unsubscribeUrl);
 			return sendEmail(sub.email, subject, text);
 		} else if (sub.type === 'webhook' && sub.webhook_url) {
 			return sendWebhook(sub.webhook_url, payload);
@@ -55,7 +57,7 @@ const notifyAll = async (event, data) => {
 	await Promise.allSettled(promises);
 };
 
-const formatNotification = (event, data) => {
+const formatNotification = (event, data, unsubscribeUrl) => {
 	let text = `ServPulse Notification\n${'='.repeat(40)}\n\n`;
 	text += `Event: ${event}\n`;
 	text += `Time: ${new Date().toISOString()}\n\n`;
@@ -64,6 +66,9 @@ const formatNotification = (event, data) => {
 	if (data.status) text += `Status: ${data.status}\n`;
 	if (data.impact) text += `Impact: ${data.impact}\n`;
 	if (data.message) text += `Message: ${data.message}\n`;
+
+	text += `\n${'—'.repeat(40)}\n`;
+	text += `Unsubscribe: ${unsubscribeUrl}\n`;
 
 	return text;
 };

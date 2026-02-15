@@ -10,6 +10,7 @@ require('dotenv').config(); // Set up .env file
 require('./config/database.js'); // Set up database connection
 
 const express = require('express');
+const healthCheckService = require('./services/healthCheckService.js');
 const cors = require('cors');
 const app = express();
 
@@ -25,6 +26,7 @@ const maintenanceRoutes = require('./routes/maintenanceRoutes.js');
 const webhookRoutes = require('./routes/webhookRoutes.js');
 const metricRoutes = require('./routes/metricRoutes.js');
 const subscriberRoutes = require('./routes/subscriberRoutes.js');
+const authRoutes = require('./routes/authRoutes.js');
 
 // Use the routes
 app.use('/api', serviceRoutes);
@@ -34,6 +36,9 @@ app.use('/api', maintenanceRoutes);
 app.use('/api', webhookRoutes);
 app.use('/api', metricRoutes);
 app.use('/api', subscriberRoutes);
+app.use('/api', authRoutes);
+
+healthCheckService.start();
 
 // Start the server
 const PORT = process.env.EXPRESS_PORT || 3000;

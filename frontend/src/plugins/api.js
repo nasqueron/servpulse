@@ -13,8 +13,15 @@ apiClient.interceptors.request.use((config) => {
   return config
 })
 
+export const authApi = {
+  verify: (token) => apiClient.post('/auth/verify', {}, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).then((r) => r.data),
+}
+
 export const configApi = {
   getAll: () => apiClient.get('/config/getAll').then((r) => r.data),
+  update: (data) => apiClient.put('/config', data).then((r) => r.data),
 }
 
 export const servicesApi = {
@@ -53,7 +60,9 @@ export const metricsApi = {
 
 export const subscribersApi = {
   subscribe: (data) => apiClient.post('/subscribers', data).then((r) => r.data),
+  requestUnsubscribe: (email) => apiClient.post('/subscribers/unsubscribe-request', { email }).then((r) => r.data),
   confirm: (token) => apiClient.get(`/subscribers/confirm/${token}`).then((r) => r.data),
+  unsubscribe: (token) => apiClient.get(`/subscribers/unsubscribe/${token}`).then((r) => r.data),
   getAll: () => apiClient.get('/subscribers').then((r) => r.data),
   delete: (id) => apiClient.delete(`/subscribers/${id}`).then((r) => r.data),
 }

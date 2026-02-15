@@ -1,15 +1,31 @@
 {
 	"navbar": {
-		"title": "ServPulse",
-		"button_left": {
-			"name": "DevCentral",
-			"icon": "fa fa-play",
-			"link": "https://devcentral.nasqueron.org"
+		"title": "Codrlabs Uptime",
+		"buttons_left": [
+			{
+				"name": "DevCentral",
+				"icon": "fa fa-play",
+				"link": "https://devcentral.nasqueron.org"
+			},
+			{
+				"name": "Agora",
+				"icon": "fa fa-book",
+				"link": "https://agora.nasqueron.org"
+			}
+		]
+	},
+	"footer": {
+		"line1": {
+			"text": "Powered by %link1% — made with ❤️ by %link2%",
+			"link1_label": "ServPulse",
+			"link1_url": "https://devcentral.nasqueron.org/source/servpulse/",
+			"link2_label": "Nasqueron",
+			"link2_url": "https://nasqueron.org"
 		},
-		"button_right": {
-			"name": "Agora",
-			"icon": "fa fa-book",
-			"link": "https://agora.nasqueron.org"
+		"line2": {
+			"text": "Find this useful? %link%",
+			"link_label": "Contribute to Nasqueron",
+			"link_url": "https://devcentral.nasqueron.org/source/servpulse/"
 		}
 	}
 }

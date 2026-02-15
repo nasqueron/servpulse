@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import StatusPage from '@/views/StatusPage.vue'
+import { authApi } from '@/plugins/api'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,6 +9,16 @@ const router = createRouter({
       path: '/',
       name: 'status',
       component: StatusPage,
+    },
+    {
+      path: '/confirm/:token',
+      name: 'confirm-subscription',
+      component: () => import('@/views/ConfirmSubscription.vue'),
+    },
+    {
+      path: '/unsubscribe/:token',
+      name: 'unsubscribe',
+      component: () => import('@/views/Unsubscribe.vue'),
     },
     {
       path: '/admin/login',
@@ -23,10 +34,16 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   if (to.meta.requiresAuth) {
     const token = localStorage.getItem('servpulse_token')
     if (!token) {
+      return { name: 'admin-login' }
+    }
+    try {
+      await authApi.verify(token)
+    } catch {
+      localStorage.removeItem('servpulse_token')
       return { name: 'admin-login' }
     }
   }

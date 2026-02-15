@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
+import { authApi } from '@/plugins/api'
 
 const router = useRouter()
 const { login } = useAuth()
@@ -9,13 +10,18 @@ const { login } = useAuth()
 const token = ref('')
 const error = ref('')
 
-const handleLogin = () => {
+const handleLogin = async () => {
   if (!token.value.trim()) {
     error.value = 'Please enter a valid token'
     return
   }
-  login(token.value.trim())
-  router.push('/admin')
+  try {
+    await authApi.verify(token.value.trim())
+    login(token.value.trim())
+    router.push('/admin')
+  } catch {
+    error.value = 'Invalid or expired token'
+  }
 }
 </script>
 

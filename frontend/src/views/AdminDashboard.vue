@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useServices } from '@/composables/useServices'
 import { useIncidents } from '@/composables/useIncidents'
 import { useMaintenances } from '@/composables/useMaintenances'
-import { servicesApi, incidentsApi, maintenancesApi } from '@/plugins/api'
+import { servicesApi, incidentsApi, maintenancesApi, configApi } from '@/plugins/api'
 import StatusBadge from '@/components/StatusBadge.vue'
 import { formatDate } from '@/utils/status'
 
@@ -12,13 +12,14 @@ const tabs = [
   { key: 'services', label: 'Services' },
   { key: 'incidents', label: 'Incidents' },
   { key: 'maintenance', label: 'Maintenance' },
+  { key: 'settings', label: 'Settings' },
 ]
 
 // Services
 const { services, fetchServices } = useServices()
 const showServiceForm = ref(false)
 const editingService = ref(null)
-const serviceForm = ref({ name: '', group: '', description: '', status: 'operational', order: 0 })
+const serviceForm = ref({ name: '', group: '', description: '', url: '', auto_status: true, status: 'operational', order: 0 })
 
 const openServiceForm = (service = null) => {
   if (service) {
@@ -26,7 +27,7 @@ const openServiceForm = (service = null) => {
     serviceForm.value = { ...service }
   } else {
     editingService.value = null
-    serviceForm.value = { name: '', group: '', description: '', status: 'operational', order: 0 }
+    serviceForm.value = { name: '', group: '', description: '', url: '', auto_status: true, status: 'operational', order: 0 }
   }
   showServiceForm.value = true
 }
@@ -144,10 +145,69 @@ const deleteMaintenance = async (id) => {
   }
 }
 
+// Settings
+const settingsForm = ref({
+  navbar: { title: 'ServPulse', buttons_left: [] },
+  footer: {
+    line1: { text: '', link1_label: '', link1_url: '', link2_label: '', link2_url: '' },
+    line2: { text: '', link_label: '', link_url: '' },
+  },
+})
+const MAX_FOOTER_LENGTH = 100
+const settingsSaved = ref(false)
+
+const defaultFooter = {
+  line1: { text: 'Powered by %link1% — made with ❤️ by %link2%', link1_label: 'ServPulse', link1_url: 'https://devcentral.nasqueron.org/source/servpulse/', link2_label: 'Nasqueron', link2_url: 'https://nasqueron.org' },
+  line2: { text: 'Find this useful? %link%', link_label: 'Contribute to Nasqueron', link_url: 'https://devcentral.nasqueron.org/source/servpulse/' },
+}
+
+const fetchSettings = async () => {
+  try {
+    const data = await configApi.getAll()
+    if (!data.footer) data.footer = { ...defaultFooter }
+    if (!data.footer.line1) data.footer.line1 = { ...defaultFooter.line1 }
+    if (!data.footer.line2) data.footer.line2 = { ...defaultFooter.line2 }
+    settingsForm.value = data
+  } catch (err) {
+    alert('Error loading settings: ' + err.message)
+  }
+}
+
+const saveSettings = async () => {
+  const buttons = settingsForm.value.navbar.buttons_left || []
+  const hasEmpty = buttons.some((btn) => !btn.name.trim() || !btn.link.trim())
+  if (hasEmpty) {
+    alert('All navigation links must have a name and URL.')
+    return
+  }
+  try {
+    await configApi.update(settingsForm.value)
+    settingsSaved.value = true
+    setTimeout(() => { settingsSaved.value = false }, 3000)
+  } catch (err) {
+    alert('Error saving settings: ' + err.message)
+  }
+}
+
+const MAX_NAV_BUTTONS = 3
+
+const addNavButton = () => {
+  if (!settingsForm.value.navbar.buttons_left) {
+    settingsForm.value.navbar.buttons_left = []
+  }
+  if (settingsForm.value.navbar.buttons_left.length >= MAX_NAV_BUTTONS) return
+  settingsForm.value.navbar.buttons_left.push({ name: '', link: '' })
+}
+
+const removeNavButton = (index) => {
+  settingsForm.value.navbar.buttons_left.splice(index, 1)
+}
+
 onMounted(() => {
   fetchServices()
   fetchIncidents()
   fetchMaintenances()
+  fetchSettings()
 })
 
 const statusOptions = ['operational', 'degraded', 'partial', 'major', 'maintenance']
@@ -198,11 +258,21 @@ const maintenanceStatusOptions = ['scheduled', 'in_progress', 'completed']
             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Description</label>
             <input v-model="serviceForm.description" class="input-field" />
           </div>
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">URL</label>
+            <input v-model="serviceForm.url" type="url" class="input-field" placeholder="https://example.com" />
+          </div>
           <div>
             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Status</label>
-            <select v-model="serviceForm.status" class="input-field">
+            <select v-model="serviceForm.status" class="input-field" :disabled="serviceForm.url && serviceForm.auto_status">
               <option v-for="s in statusOptions" :key="s" :value="s">{{ s }}</option>
             </select>
+          </div>
+          <div class="flex items-end h-full">
+            <label class="flex items-center gap-2 h-[38px]">
+              <input v-model="serviceForm.auto_status" type="checkbox" class="rounded border-gray-300 dark:border-gray-600" />
+              <span class="text-xs font-medium text-gray-600 dark:text-gray-400">Auto-manage status via health checks</span>
+            </label>
           </div>
           <div>
             <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Order</label>
@@ -378,6 +448,98 @@ const maintenanceStatusOptions = ['scheduled', 'in_progress', 'completed']
           </tbody>
         </table>
       </div>
+    </div>
+
+    <!-- Settings Tab -->
+    <div v-show="activeTab === 'settings'">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Settings</h2>
+      </div>
+
+      <form @submit.prevent="saveSettings" class="space-y-6">
+        <!-- Site Title -->
+        <div class="card p-5">
+          <h3 class="text-sm font-semibold mb-3">Site Title</h3>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Navbar Title</label>
+            <input v-model="settingsForm.navbar.title" class="input-field max-w-sm" placeholder="ServPulse" />
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="card p-5">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-sm font-semibold">Navigation Links</h3>
+            <button v-if="(settingsForm.navbar.buttons_left?.length || 0) < MAX_NAV_BUTTONS" type="button" @click="addNavButton" class="btn-secondary text-xs">+ Add Link</button>
+          </div>
+          <div v-if="settingsForm.navbar.buttons_left?.length" class="space-y-3">
+            <div v-for="(btn, index) in settingsForm.navbar.buttons_left" :key="index" class="flex gap-3 items-end">
+              <div class="flex-1">
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Name</label>
+                <input v-model="btn.name" class="input-field" placeholder="DevCentral" required />
+              </div>
+              <div class="flex-1">
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">URL</label>
+                <input v-model="btn.link" type="url" class="input-field" placeholder="https://example.com" required />
+              </div>
+              <button type="button" @click="removeNavButton(index)" class="text-red-600 hover:text-red-700 text-xs font-medium h-[38px] shrink-0">Remove</button>
+            </div>
+          </div>
+          <p v-else class="text-sm text-gray-400">No navigation links configured.</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="card p-5">
+          <h3 class="text-sm font-semibold mb-3">Footer</h3>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Line 1 — Text <span class="text-gray-400">(use %link1% and %link2% for links)</span></label>
+              <input v-model="settingsForm.footer.line1.text" class="input-field" :maxlength="MAX_FOOTER_LENGTH" placeholder="Powered by %link1% — made with ❤️ by %link2%" />
+              <p class="text-xs text-gray-400 mt-1">{{ settingsForm.footer.line1.text.length }}/{{ MAX_FOOTER_LENGTH }}</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Link 1 Label</label>
+                <input v-model="settingsForm.footer.line1.link1_label" class="input-field" maxlength="30" placeholder="ServPulse" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Link 1 URL</label>
+                <input v-model="settingsForm.footer.line1.link1_url" type="url" class="input-field" placeholder="https://..." />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Link 2 Label</label>
+                <input v-model="settingsForm.footer.line1.link2_label" class="input-field" maxlength="30" placeholder="Nasqueron" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Link 2 URL</label>
+                <input v-model="settingsForm.footer.line1.link2_url" type="url" class="input-field" placeholder="https://..." />
+              </div>
+            </div>
+            <hr class="border-gray-200 dark:border-gray-700" />
+            <div>
+              <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Line 2 — Text <span class="text-gray-400">(use %link% for a link)</span></label>
+              <input v-model="settingsForm.footer.line2.text" class="input-field" :maxlength="MAX_FOOTER_LENGTH" placeholder="Find this useful? %link%" />
+              <p class="text-xs text-gray-400 mt-1">{{ settingsForm.footer.line2.text.length }}/{{ MAX_FOOTER_LENGTH }}</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Link Label</label>
+                <input v-model="settingsForm.footer.line2.link_label" class="input-field" maxlength="30" placeholder="Contribute to Nasqueron" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Link URL</label>
+                <input v-model="settingsForm.footer.line2.link_url" type="url" class="input-field" placeholder="https://..." />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save -->
+        <div class="flex items-center gap-3">
+          <button type="submit" class="btn-primary">Save Settings</button>
+          <span v-if="settingsSaved" class="text-sm text-green-500">Settings saved!</span>
+        </div>
+      </form>
     </div>
   </div>
 </template>

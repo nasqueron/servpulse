@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS service (
     name VARCHAR(255) NOT NULL,
     "group" VARCHAR(255),
     description TEXT,
+    url TEXT,
+    auto_status BOOLEAN NOT NULL DEFAULT true,
     status VARCHAR(50) NOT NULL DEFAULT 'operational',
     "order" INTEGER DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -84,6 +86,7 @@ CREATE TABLE IF NOT EXISTS subscriber (
     type VARCHAR(20) NOT NULL DEFAULT 'email',
     confirmed BOOLEAN NOT NULL DEFAULT false,
     confirm_token VARCHAR(255),
+    unsubscribe_token VARCHAR(255),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     CONSTRAINT subscriber_contact CHECK (email IS NOT NULL OR webhook_url IS NOT NULL)
 );

@@ -147,6 +147,7 @@ servpulse/
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| POST | `/api/auth/verify` | Verify a JWT token |
 | POST | `/api/services` | Create a service |
 | PUT | `/api/services/:id` | Update a service |
 | DELETE | `/api/services/:id` | Delete a service |
@@ -159,6 +160,7 @@ servpulse/
 | POST | `/api/metrics` | Record a metric data point |
 | GET | `/api/subscribers` | List all subscribers |
 | DELETE | `/api/subscribers/:id` | Remove a subscriber |
+| PUT | `/api/config` | Update app configuration (navbar, branding) |
 | POST | `/api/webhooks/ingest` | Inbound monitoring webhook |
 
 ### Monitoring Webhook
@@ -186,6 +188,7 @@ This automatically updates the service status and creates an incident if the sta
 | `POSTGRES_CONNECTION_STRING` | — | Full PostgreSQL connection string |
 | `EXPRESS_PORT` | `3000` | Backend API port |
 | `JWT_SECRET` | `servpulse-dev-secret` | Secret for JWT token signing |
+| `HEALTH_CHECK_INTERVAL` | `60000` | Health check interval in milliseconds |
 | `VITE_API_URL` | `http://localhost:3000/api` | API URL for frontend |
 | `SMTP_HOST` | `localhost` | SMTP server for email notifications |
 | `SMTP_PORT` | `587` | SMTP port |
