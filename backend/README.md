@@ -1,57 +1,84 @@
-# How it started
-The backend of ServPulse was developed using an MVC-inspired architecture. First, Node v20.1.0 was installed using NVM[^1], followed by Express.js. Finally, the backend was connected to a PostgreSQL database.
+# ServPulse Backend
 
-It is important to note that while some elements and features are not currently implemented in the project, they are included as examples to demonstrate the organization of the project as it progresses.
+Express.js REST API server with MVC architecture, JWT authentication, and PostgreSQL.
 
-# Backend's structure
-```shell
-├── app.js
-├── config
-│   ├── app.json
-│   └── database.js
-├── routes
-│   ├── configRoutes.js
-│   ├── incidentRoutes.js
-│   └── serviceRoutes.js
-├── controllers
+## Structure
+
+```
+backend/
+├── app.js                  # Application entry point
+├── config/
+│   ├── app.json            # Navbar and branding configuration
+│   └── database.js         # PostgreSQL connection pool
+├── controllers/
 │   ├── configController.js
 │   ├── incidentController.js
-│   └── serviceController.js
-├── models
+│   ├── maintenanceController.js
+│   ├── metricController.js
+│   ├── serviceController.js
+│   ├── subscriberController.js
+│   └── webhookController.js
+├── middleware/
+│   └── auth.js             # JWT authentication (generateToken, authenticate)
+├── models/
 │   ├── configModel.js
 │   ├── incidentModel.js
-│   ├── incidentPostModel.js
-│   ├── incidentPostStatusModel.js
 │   ├── incidentServiceModel.js
-│   └── serviceModel.js
-└── package.json
+│   ├── incidentUpdateModel.js
+│   ├── maintenanceModel.js
+│   ├── maintenanceServiceModel.js
+│   ├── metricModel.js
+│   ├── serviceModel.js
+│   └── subscriberModel.js
+├── routes/
+│   ├── configRoutes.js
+│   ├── incidentRoutes.js
+│   ├── maintenanceRoutes.js
+│   ├── metricRoutes.js
+│   ├── serviceRoutes.js
+│   ├── subscriberRoutes.js
+│   └── webhookRoutes.js
+├── services/
+│   └── notificationService.js  # Email (Nodemailer) and webhook dispatch
+└── __tests__/                  # Jest unit tests
 ```
 
-# Insights
-- `app.js`: This is the starting point of the application and is responsible for loading everything and serving user requests.
-- `config`: This folder contains configuration files such as `app.json` and `database.js`, which define settings and variables for the application.
-- `routes`: This folder contains route files such as `configRoutes.js`, `incidentRoutes.js`, and `serviceRoutes.js`, which define the routes and their corresponding handlers for different parts of the application.
-- `controllers`: This folder contains controller files such as `configController.js`, `incidentController.js`, and `serviceController.js`, which define the business logic and handle the requests and responses for different parts of the application.
-- `models`: This folder contains model files such as `configModel.js`, `incidentModel.js`, `incidentPostModel.js`, `incidentPostStatusModel.js`, `incidentServiceModel.js`, and `serviceModel.js`, which represent the data, implement the business logic, and handle storage for different parts of the application.
-- `package.json`: This file is used to define the project dependencies, scripts, and other metadata for the application.
+## Development
 
-The above explanation provides a general overview of the common files and directories found in an MVC-like backend.
+```bash
+npm install
+npm run dev   # Starts with --watch for auto-reload
+```
 
-# Notes
-- The `config/app.json` file serves as a json object for in-app customizable settings.
-- The `config/database.js` file serves as a quick connector to the database, and makes it easy to just import and query. Examples can be found in `models/`.
-- The following was the original workflow used to implement the current capabilities of the backend:
-  - `config/app.json` | `config/database.js`
-  - `routes/serviceRoutes.js` -> `controllers/serviceController.js` -> `models/serviceModel.js`
+## Testing
 
-# Code conventions
+```bash
+npm test      # Runs Jest with verbose output
+```
 
-The project adheres to the following code conventions:
-[https://agora.nasqueron.org/Code_conventions](https://agora.nasqueron.org/Code_conventions)
+## Adding a New Resource
 
-In addition:
--   the project uses single quotes
--   both variables and functions names are in camelCase
+Follow the MVC pattern:
 
-# Footnotes
-[^1]: (Node Version Manager) NVM is a bash script that allows you to manage multiple versions of Node.js on your system. With NVM, you can easily switch between different versions of Node.js, install new versions, and manage dependencies for each version.
+1. Add table to `database/init.sql`
+2. Create `models/resourceModel.js` — raw `pg` queries
+3. Create `controllers/resourceController.js` — req/res handlers
+4. Create `routes/resourceRoutes.js` — Express router with auth where needed
+5. Register routes in `app.js`
+6. Add tests in `__tests__/controllers/resourceController.test.js`
+
+## Authentication
+
+Admin endpoints require a JWT Bearer token. Generate one:
+
+```js
+const { generateToken } = require('./middleware/auth.js');
+console.log(generateToken({ role: 'admin' }));
+```
+
+## Code Conventions
+
+- [Nasqueron conventions](https://agora.nasqueron.org/Code_conventions)
+- Single quotes, camelCase naming
+- Raw `pg` queries (no ORM) for simplicity
+- Fire-and-forget notifications (non-blocking)
