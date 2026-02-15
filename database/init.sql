@@ -72,3 +72,36 @@ CREATE TABLE IF NOT EXISTS maintenance_service (
     service_id INTEGER NOT NULL REFERENCES service(id) ON DELETE CASCADE,
     UNIQUE(maintenance_id, service_id)
 );
+
+--
+-- Subscribers
+--
+
+CREATE TABLE IF NOT EXISTS subscriber (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255),
+    webhook_url TEXT,
+    type VARCHAR(20) NOT NULL DEFAULT 'email',
+    confirmed BOOLEAN NOT NULL DEFAULT false,
+    confirm_token VARCHAR(255),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    CONSTRAINT subscriber_contact CHECK (email IS NOT NULL OR webhook_url IS NOT NULL)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriber_email ON subscriber(email) WHERE email IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_subscriber_webhook ON subscriber(webhook_url) WHERE webhook_url IS NOT NULL;
+
+--
+-- Metrics
+--
+
+CREATE TABLE IF NOT EXISTS metric (
+    id SERIAL PRIMARY KEY,
+    service_id INTEGER NOT NULL REFERENCES service(id) ON DELETE CASCADE,
+    uptime DECIMAL(5,2) NOT NULL DEFAULT 100.00,
+    response_time INTEGER,
+    error_rate DECIMAL(5,2) DEFAULT 0.00,
+    recorded_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_metric_service_date ON metric(service_id, recorded_at DESC);

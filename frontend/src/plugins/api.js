@@ -42,4 +42,20 @@ export const maintenancesApi = {
   delete: (id) => apiClient.delete(`/maintenances/${id}`).then((r) => r.data),
 }
 
+export const metricsApi = {
+  getLatest: () => apiClient.get('/metrics').then((r) => r.data),
+  getByService: (serviceId, days = 30) =>
+    apiClient.get(`/metrics/service/${serviceId}?days=${days}`).then((r) => r.data),
+  getDailySummary: (serviceId, days = 30) =>
+    apiClient.get(`/metrics/service/${serviceId}/daily?days=${days}`).then((r) => r.data),
+  record: (data) => apiClient.post('/metrics', data).then((r) => r.data),
+}
+
+export const subscribersApi = {
+  subscribe: (data) => apiClient.post('/subscribers', data).then((r) => r.data),
+  confirm: (token) => apiClient.get(`/subscribers/confirm/${token}`).then((r) => r.data),
+  getAll: () => apiClient.get('/subscribers').then((r) => r.data),
+  delete: (id) => apiClient.delete(`/subscribers/${id}`).then((r) => r.data),
+}
+
 export default apiClient

@@ -8,6 +8,7 @@ import ServiceGroup from '@/components/ServiceGroup.vue'
 import IncidentTimeline from '@/components/IncidentTimeline.vue'
 import MaintenanceCard from '@/components/MaintenanceCard.vue'
 import { incidentsApi } from '@/plugins/api'
+import SubscribeForm from '@/components/SubscribeForm.vue'
 
 const { services, loading: servicesLoading, fetchServices, groupedServices } = useServices()
 const { incidents, loading: incidentsLoading, fetchIncidents, activeIncidents, resolvedIncidents } = useIncidents()
@@ -87,6 +88,11 @@ const isLoading = computed(() => servicesLoading.value || incidentsLoading.value
         <div class="space-y-3">
           <IncidentTimeline v-for="i in recentResolved" :key="i.id" :incident="i" />
         </div>
+      </section>
+
+      <!-- Subscribe -->
+      <section>
+        <SubscribeForm />
       </section>
     </template>
   </div>

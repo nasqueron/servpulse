@@ -22,12 +22,18 @@ const serviceRoutes = require('./routes/serviceRoutes.js');
 const incidentRoutes = require('./routes/incidentRoutes.js');
 const configRoutes = require('./routes/configRoutes.js');
 const maintenanceRoutes = require('./routes/maintenanceRoutes.js');
+const webhookRoutes = require('./routes/webhookRoutes.js');
+const metricRoutes = require('./routes/metricRoutes.js');
+const subscriberRoutes = require('./routes/subscriberRoutes.js');
 
 // Use the routes
 app.use('/api', serviceRoutes);
 app.use('/api', incidentRoutes);
 app.use('/api', configRoutes);
 app.use('/api', maintenanceRoutes);
+app.use('/api', webhookRoutes);
+app.use('/api', metricRoutes);
+app.use('/api', subscriberRoutes);
 
 // Start the server
 const PORT = process.env.EXPRESS_PORT || 3000;
