@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
-    "foundation-sites": "^6.7.5",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0"
   },
@@ -21,10 +20,13 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/test-utils": "^2.3.2",
+    "autoprefixer": "^10.4.24",
     "eslint": "^8.39.0",
     "eslint-plugin-vue": "^9.11.0",
     "jsdom": "^22.0.0",
+    "postcss": "^8.5.6",
     "prettier": "^2.8.8",
+    "tailwindcss": "^3.4.19",
     "vite": "^4.3.5",
     "vitest": "^0.31.0"
   }
