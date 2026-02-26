@@ -11,6 +11,11 @@ const router = createRouter({
       component: StatusPage,
     },
     {
+      path: '/incidents',
+      name: 'incident-history',
+      component: () => import('@/views/IncidentHistory.vue'),
+    },
+    {
       path: '/confirm/:token',
       name: 'confirm-subscription',
       component: () => import('@/views/ConfirmSubscription.vue'),

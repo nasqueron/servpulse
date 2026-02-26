@@ -20,6 +20,7 @@ flowchart LR
 flowchart TB
     subgraph Views["Views (Pages)"]
         SP["StatusPage.vue\n(Public status page)"]
+        IH["IncidentHistory.vue\n(All incidents + date filter)"]
         AL["AdminLogin.vue\n(Token-paste login)"]
         AD["AdminDashboard.vue\n(CRUD: Services, Incidents, Maintenance)"]
     end
@@ -54,12 +55,14 @@ flowchart TB
     SP --> IT
     SP --> MC
     SP --> SF
+    IH --> IT
     SG --> SB
     AD --> SB
 
     SP --> US
     SP --> UI
     SP --> UM
+    IH --> UI
     AD --> US
     AD --> UI
     AD --> UM

@@ -88,6 +88,13 @@ const isLoading = computed(() => servicesLoading.value || incidentsLoading.value
         <div class="space-y-3">
           <IncidentTimeline v-for="i in recentResolved" :key="i.id" :incident="i" />
         </div>
+        <router-link
+          v-if="resolvedIncidents().length > 5"
+          to="/incidents"
+          class="block text-center text-sm text-brand-500 hover:text-brand-600 mt-4"
+        >
+          View all incidents
+        </router-link>
       </section>
 
       <!-- Subscribe -->
